@@ -25,6 +25,8 @@
     "knockout": "~3.3.0",
     "jquery": "~2.1.4",
     "slickgrid": "~2.1.0",
-    "jquery-ui": "~1.11.4"
+    "jquery-ui": "~1.11.4",
+    "select2": "~4.0.0",
+    "jquery-tokeninput": "~1.7.0"
   }
 }
