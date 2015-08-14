@@ -3,7 +3,7 @@
 ## Installation
 
 1. Download and install node from https://nodejs.org/
-2. Download and install git from https://git-scm.com/\
+2. Download and install git from https://git-scm.com/
 3. Navigate to any folder clone the repo to, e.g. 'Repos'
 4. Open 'Git Bash' from Start menu and switch to the folder
 ```
