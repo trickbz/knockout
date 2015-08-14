@@ -115,6 +115,7 @@ $(function () {
 	var grid;
 	var columns = [
 		{ id: "url", name: "URL", field: "url", formatter: linkFormatter },
+		{ id: "order", name: "Order", field: "order", sortable: true },
 		// { id: "duration", name: "Duration", field: "duration" },
 		// { id: "%", name: "% Complete", field: "percentComplete" },
 		// { id: "start", name: "Start", field: "start" },
@@ -127,7 +128,14 @@ $(function () {
 	};
 
 	var gridData = [
-		{ url: { href: "http://www.google.com", text: "Google" } }
+		{
+			url: { href: "http://www.google.com", text: "Google" },
+			order: 1
+		},
+		{
+			url: { href: "http://www.ya.ru", text: "Yandex" },
+			order: 2
+		},
 	];
 
 	// var data = [];
@@ -142,5 +150,11 @@ $(function () {
 	// 	};
 	// }
 	grid = new Slick.Grid("#slickGrid", gridData, columns, options);
+	grid.onSort.subscribe(function (e, args) {
+		console.log('sorting');
+		grid.invalidateRows(args.rows);
+		grid.render();
+	});
+	//grid.setSelectionModel(new Slick.RowSelectionModel());
 
 });
