@@ -9,7 +9,7 @@
 ```
 cd /d/Repos
 ```
-5. Install bower and gulp globally (maybe optional)
+5. Install bower and gulp globally (maybe optional )
 ```
 npm install -g bower
 npm install -g gulp
