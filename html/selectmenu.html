@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>jQuery UI - Slider</title>
+
+	<link rel="stylesheet" href="../bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+
+	<script src='../bower_components/knockout/dist/knockout.js' type='text/javascript'></script>
+	<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
+</head>
+
+<body>
+	<a href="../index.html">Back to the index.html page</a>
+
+	<h2>Regular options binding not using jQuery UI</h2>
+
+	<div>
+		<select data-bind="options: countries,
+							value: selectedCountry,
+							optionsText: 'name',
+							optionsCaption: 'Choose..'"></select>
+		<span data-bind="if: selectedCountry">
+			<span data-bind="with: selectedCountry" >
+				<span data-bind="text: $parent.formatCountry($data)" />
+			<span />
+		</span>
+		</span>
+	</div>
+
+	<hr />
+
+	<h2>Custom binding to jQuery UI selectmenu widget</h2>
+
+	<select data-bind="selectmenu: selectedCountry1, selectmenuOptions: { width: 300 }, options: countries, optionsValue: 'id', optionsText: 'name'">
+	</select>
+	<span data-bind="if: selectedCountry1">
+		<span data-bind="text: selectedCountry1().value + selectedCountry1().label"></span>
+		<span data-bind="with: selectedCountry1">
+			
+		</span>
+	</span>
+	<div>
+		<span data-bind="if: selectedCountry1">
+			<input data-bind="value: selectedCountry1().value" />	
+		</span>
+	</div>
+	
+
+	<script>
+		ko.bindingHandlers.selectmenu = {
+			init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+				var options = allBindings().selectmenuOptions || {};
+				$(element).selectmenu(options);
+				ko.utils.registerEventHandler(element, 'selectmenuchange', function(event, ui) {
+					var observable = valueAccessor();
+					observable(ui.item);
+				});
+				
+				ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+					$(element).selectmenu("destroy");
+				});
+				
+				ko.utils.registerEventHandler(element, "selectmenuselect", function (event, ui) {
+					var observable = valueAccessor();
+					observable(ui.item);
+				});
+			},
+			update: function (element, valueAccessor, allBindingsAccessor) {
+				var oldValue, newValue;
+				if (allBindingsAccessor().hasOwnProperty('value')) {
+					oldValue = ko.utils.domData.get(element, domDataKey);
+					newValue = ko.utils.unwrapObservable(allBindingsAccessor().value);
+					if (oldValue !== newValue) {
+						$(element).selectmenu('refresh');
+					}
+            	}
+			}
+		};
+		
+		var Country = function(id, name) {
+			this.id = ko.observable(id);
+			this.name = ko.observable(name);
+		};
+		
+		var ViewModel = function() {
+			var self = this;
+			
+			self.formatCountry = function(country) {
+				return "id: " + country.id() + ", name: " + country.name();
+			};
+			self.countries = ko.observableArray([
+				new Country(1, "USA"),
+				new Country(2, "Ukraine"),
+				new Country(3, "France")
+			]);
+			self.selectedCountry = ko.observable();
+			self.selectedCountry1 = ko.observable();
+		}
+
+		var viewModel = new ViewModel();
+		ko.applyBindings(viewModel);
+	</script>
+
+</body>
+
+</html>
