@@ -56,7 +56,7 @@
 	
 	var ViewModel = function() {
 		var self = this;
-		self.sliderValue = ko.observable(10);
+		self.sliderValue = ko.observable(22);
 		self.showSlider = ko.observable(true);
 		self.getTextBoxBgColor = ko.pureComputed(function() {
 			return self.sliderValue() > 50 ? "rgb(255,128,128)" : 'white';

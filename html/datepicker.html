@@ -62,7 +62,7 @@
 	var ViewModel = function() {
 		var self = this;
 		
-		self.pickerDate = ko.observable(new Date());
+		self.pickerDate = ko.observable(new Date(2002, 11, 11));
 		self.setToday = function() {
 			self.pickerDate(new Date());
 		};

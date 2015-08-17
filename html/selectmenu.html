@@ -30,7 +30,7 @@
 			<td>
 				<div>
 					<select data-bind="options: countries,
-										value: selectedCountry,
+										value: selectedCountry(),
 										optionsText: 'name',
 										optionsCaption: 'Choose..'"></select>
 					</span>
@@ -63,7 +63,7 @@
 		<tr>
 			<td>
 				<select data-bind="selectmenu: selectedCountry1,
-						value: deselectCountry1(),
+						value: selectedCountry1,
 						selectmenuOptions: { width: 300 }, 
 						options: countries, 
 						optionsValue: 'id', 
@@ -93,15 +93,22 @@
 		ko.bindingHandlers.selectmenu = {
 			init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
 				var options = allBindings().selectmenuOptions || {};
-				$(element).selectmenu(options);
+				var $el = $(element);
+				$el.selectmenu(options);
 				ko.utils.registerEventHandler(element, 'selectmenuchange', function(event, ui) {
 					var observable = valueAccessor();
 					observable(observable ? ui.item.value: undefined);	
+
 				});
 				
 				ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
 					$(element).selectmenu("destroy");
 				});
+				
+				// ko.utils.registerEventHandler(element, "selectmenuselect", function (event, ui) {
+				// 	var observable = valueAccessor();
+				// 	observable(observable ? ui.item.value: undefined);
+				// });
 			},
 			update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
 				var observable = valueAccessor();
@@ -109,14 +116,13 @@
 				if (observable && observable())
 				{
 					$el.val(observable());
-					$el.selectmenu('refresh');
+					$el.selectmenu('refresh');						
 				} else {
 					if ($el.val() != null)
 					{
 						$el.val(undefined);
 						$el.selectmenu('refresh');	
 					}
-					
 				}
 			}
 		}
@@ -137,26 +143,31 @@
 				new Country(2, "Ukraine"),
 				new Country(3, "France")
 			]);
-			self.selectedCountry = ko.observable();
-			self.selectedCountry1 = ko.observable(2);
-			
+
+			// first
+			self.selectedCountry = ko.observable( self.countries()[2] );
 			self.pagingButtonClick = function(button) {
 				self.selectedCountry(button);
 			};
 
-			self.pagingButtonClick1 = function(button) {
-				self.selectedCountry1(button.id());
-			};
-			
 			self.deselectCountry = function() {
 				self.selectedCountry(undefined);
 			}
+			
+			// second
+			self.selectedCountry1 = ko.observable();
+			self.pagingButtonClick1 = function(button) {
+				self.selectedCountry1(button.id());
+			};
 			self.deselectCountry1 = function() {
 				self.selectedCountry1(undefined);
 			}
 		}
 
 		var viewModel = new ViewModel();
+		viewModel.selectedCountry1.subscribe(function(newValue) {
+			console.log('subscribe: ' + newValue);
+		});
 		ko.applyBindings(viewModel);
 	</script>
 
