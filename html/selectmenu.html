@@ -30,7 +30,7 @@
 			<td>
 				<div>
 					<select data-bind="options: countries,
-										value: selectedCountry(),
+										value: selectedCountry,
 										optionsText: 'name',
 										optionsCaption: 'Choose..'"></select>
 					</span>
@@ -105,25 +105,28 @@
 					$(element).selectmenu("destroy");
 				});
 				
-				// ko.utils.registerEventHandler(element, "selectmenuselect", function (event, ui) {
-				// 	var observable = valueAccessor();
-				// 	observable(observable ? ui.item.value: undefined);
-				// });
+				ko.utils.registerEventHandler(element, "selectmenuselect", function (event, ui) {
+					var observable = valueAccessor();
+					observable(observable ? ui.item.value: undefined);
+				});
 			},
 			update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
 				var observable = valueAccessor();
 				var $el = $(element);
-				if (observable && observable())
-				{
-					$el.val(observable());
-					$el.selectmenu('refresh');						
-				} else {
-					if ($el.val() != null)
-					{
-						$el.val(undefined);
-						$el.selectmenu('refresh');	
-					}
-				}
+				$el.val(observable && observable() ? observable() : undefined);
+				if ($el.val() != null)
+					$el.selectmenu('refresh');
+				// if (observable && observable())
+				// {
+				// 	$el.val(observable());
+				// 	$el.selectmenu('refresh');						
+				// } else {
+				// 	if ($el.val() != null)
+				// 	{
+				// 		$el.val(undefined);
+				// 		$el.selectmenu('refresh');	
+				// 	}
+				// }
 			}
 		}
 
@@ -165,6 +168,9 @@
 		}
 
 		var viewModel = new ViewModel();
+		viewModel.selectedCountry.subscribe(function(newValue) {
+			console.log('subscribe: ' + newValue);
+		});
 		viewModel.selectedCountry1.subscribe(function(newValue) {
 			console.log('subscribe: ' + newValue);
 		});
