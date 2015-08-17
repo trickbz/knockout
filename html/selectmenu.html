@@ -62,10 +62,10 @@
 	<table>
 		<tr>
 			<td>
-				<select data-bind="selectmenu: selectedCountry1,
-						value: selectedCountry1,
+				<!-- options binding MUST come BEFORE selectmenu binding!! -->
+				<select data-bind="options: countries, 
+						selectmenu: selectedCountry1,
 						selectmenuOptions: { width: 300 }, 
-						options: countries, 
 						optionsValue: 'id', 
 						optionsText: 'name',
 						optionsCaption: 'Choose..'" id="jqueryUiCombo">
@@ -90,91 +90,73 @@
 
 
 	<script>
-		ko.bindingHandlers.selectmenu = {
-			init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-				var options = allBindings().selectmenuOptions || {};
-				var $el = $(element);
-				$el.selectmenu(options);
-				ko.utils.registerEventHandler(element, 'selectmenuchange', function(event, ui) {
+		$(document).ready(function() {
+			ko.bindingHandlers.selectmenu = {
+				init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+					var options = allBindings().selectmenuOptions || {};
+					var $el = $(element);
+					$el.selectmenu(options);
+					
+					ko.utils.registerEventHandler(element, 'selectmenuchange', function(event, ui) {
+						var observable = valueAccessor();
+						observable(observable ? ui.item.value: undefined);
+					});
+					
+					ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+						$(element).selectmenu("destroy");
+					});
+				},
+				update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
 					var observable = valueAccessor();
-					observable(observable ? ui.item.value: undefined);	
-
-				});
-				
-				ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-					$(element).selectmenu("destroy");
-				});
-				
-				ko.utils.registerEventHandler(element, "selectmenuselect", function (event, ui) {
-					var observable = valueAccessor();
-					observable(observable ? ui.item.value: undefined);
-				});
-			},
-			update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
-				var observable = valueAccessor();
-				var $el = $(element);
-				$el.val(observable && observable() ? observable() : undefined);
-				if ($el.val() != null)
-					$el.selectmenu('refresh');
-				// if (observable && observable())
-				// {
-				// 	$el.val(observable());
-				// 	$el.selectmenu('refresh');						
-				// } else {
-				// 	if ($el.val() != null)
-				// 	{
-				// 		$el.val(undefined);
-				// 		$el.selectmenu('refresh');	
-				// 	}
-				// }
+					var $el = $(element);
+					$el.val(observable && observable() ? observable() : undefined);
+					if ($el.val() !== null) {
+						$el.selectmenu('refresh', true);
+					}
+				}
 			}
-		}
-
-		var Country = function(id, name) {
-			this.id = ko.observable(id);
-			this.name = ko.observable(name);
-		};
-		
-		var ViewModel = function() {
-			var self = this;
+	
+			var Country = function(id, name) {
+				this.id = ko.observable(id);
+				this.name = ko.observable(name);
+			};
 			
-			self.formatCountry = function(country) {
-				return "id: " + country.id() + ", name: " + country.name();
-			};
-			self.countries = ko.observableArray([
-				new Country(1, "USA"),
-				new Country(2, "Ukraine"),
-				new Country(3, "France")
-			]);
-
-			// first
-			self.selectedCountry = ko.observable( self.countries()[2] );
-			self.pagingButtonClick = function(button) {
-				self.selectedCountry(button);
-			};
-
-			self.deselectCountry = function() {
-				self.selectedCountry(undefined);
+			var ViewModel = function() {
+				var self = this;
+				
+				self.formatCountry = function(country) {
+					return "id: " + country.id() + ", name: " + country.name();
+				};
+				self.countries = ko.observableArray([
+					new Country(1, "USA"),
+					new Country(2, "Ukraine"),
+					new Country(3, "France")
+				]);
+	
+				// first
+				self.selectedCountry = ko.observable( self.countries()[2] );
+				self.pagingButtonClick = function(button) {
+					self.selectedCountry(button);
+				};
+	
+				self.deselectCountry = function() {
+					self.selectedCountry(undefined);
+				}
+				
+				// second
+				self.selectedCountry1 = ko.observable(2);
+				self.pagingButtonClick1 = function(button) {
+					self.selectedCountry1(button.id());
+				};
+				self.deselectCountry1 = function() {
+					self.selectedCountry1(undefined);
+				}
 			}
-			
-			// second
-			self.selectedCountry1 = ko.observable();
-			self.pagingButtonClick1 = function(button) {
-				self.selectedCountry1(button.id());
-			};
-			self.deselectCountry1 = function() {
-				self.selectedCountry1(undefined);
-			}
-		}
+	
+			var viewModel = new ViewModel();
+			ko.applyBindings(viewModel);
+		});
 
-		var viewModel = new ViewModel();
-		viewModel.selectedCountry.subscribe(function(newValue) {
-			console.log('subscribe: ' + newValue);
-		});
-		viewModel.selectedCountry1.subscribe(function(newValue) {
-			console.log('subscribe: ' + newValue);
-		});
-		ko.applyBindings(viewModel);
 	</script>
 
 </body>
