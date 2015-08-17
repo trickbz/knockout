@@ -39,11 +39,11 @@
 			<td>
 				<div style="margin: 10px;">
 					<!-- ko foreach: countries -->
-					<button data-bind="text: id, css: { selectedButton: ($root.selectedCountry() && $root.selectedCountry().id()) == id() }, click: $root.pagingButtonClick"></button>
+					<button data-bind="text: id, css: { selectedButton: $root.selectedCountry() && ($root.selectedCountry().id() == id()) }, click: $root.pagingButtonClick"></button>
 					<!-- /ko -->
 					<button data-bind="click: $root.deselectCountry">Deselect</button>
 				</div>
-				
+
 			</td>
 			<td>
 				<span data-bind="if: selectedCountry">
@@ -55,26 +55,38 @@
 		</tr>
 	</table>
 
-
-
-
 	<hr />
 
 	<h2>Custom binding to jQuery UI selectmenu widget</h2>
 
-	<select data-bind="selectmenu: selectedCountry1, selectmenuOptions: { width: 300 }, options: countries, optionsValue: 'id', optionsText: 'name'">
-	</select>
-	<span data-bind="if: selectedCountry1">
-		<span data-bind="text: selectedCountry1().value + selectedCountry1().label"></span>
-	<span data-bind="with: selectedCountry1">
-			
-		</span>
-	</span>
-	<div>
-		<span data-bind="if: selectedCountry1">
-			<input data-bind="value: selectedCountry1().value" />	
-		</span>
-	</div>
+	<table>
+		<tr>
+			<td>
+				<select data-bind="selectmenu: selectedCountry1,
+						value: deselectCountry1(),
+						selectmenuOptions: { width: 300 }, 
+						options: countries, 
+						optionsValue: 'id', 
+						optionsText: 'name',
+						optionsCaption: 'Choose..'" id="jqueryUiCombo">
+				</select>
+			</td>
+			<td>
+				<div style="margin: 10px;">
+					<!-- ko foreach: countries -->
+					<button data-bind="text: id(), 
+										css: { selectedButton: $root.selectedCountry1 && ($root.selectedCountry1() == id())  },
+										click: $root.pagingButtonClick1">
+					</button>
+					<!-- /ko -->
+					<button data-bind="click: deselectCountry1">Deselect</button>
+				</div>
+			</td>
+			<td data-bind="if: selectedCountry1">
+				<div data-bind="text: selectedCountry1()"></div>
+			</td>
+		</tr>
+	</table>
 
 
 	<script>
@@ -84,30 +96,31 @@
 				$(element).selectmenu(options);
 				ko.utils.registerEventHandler(element, 'selectmenuchange', function(event, ui) {
 					var observable = valueAccessor();
-					observable(ui.item);
+					observable(observable ? ui.item.value: undefined);	
 				});
 				
 				ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
 					$(element).selectmenu("destroy");
 				});
-				
-				ko.utils.registerEventHandler(element, "selectmenuselect", function (event, ui) {
-					var observable = valueAccessor();
-					observable(ui.item);
-				});
 			},
-			update: function (element, valueAccessor, allBindingsAccessor) {
-				var oldValue, newValue;
-				if (allBindingsAccessor().hasOwnProperty('value')) {
-					oldValue = ko.utils.domData.get(element, domDataKey);
-					newValue = ko.utils.unwrapObservable(allBindingsAccessor().value);
-					if (oldValue !== newValue) {
-						$(element).selectmenu('refresh');
+			update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+				var observable = valueAccessor();
+				var $el = $(element);
+				if (observable && observable())
+				{
+					$el.val(observable());
+					$el.selectmenu('refresh');
+				} else {
+					if ($el.val() != null)
+					{
+						$el.val(undefined);
+						$el.selectmenu('refresh');	
 					}
-            	}
+					
+				}
 			}
-		};
-		
+		}
+
 		var Country = function(id, name) {
 			this.id = ko.observable(id);
 			this.name = ko.observable(name);
@@ -125,12 +138,21 @@
 				new Country(3, "France")
 			]);
 			self.selectedCountry = ko.observable();
-			self.selectedCountry1 = ko.observable();
+			self.selectedCountry1 = ko.observable(2);
+			
 			self.pagingButtonClick = function(button) {
 				self.selectedCountry(button);
 			};
+
+			self.pagingButtonClick1 = function(button) {
+				self.selectedCountry1(button.id());
+			};
+			
 			self.deselectCountry = function() {
 				self.selectedCountry(undefined);
+			}
+			self.deselectCountry1 = function() {
+				self.selectedCountry1(undefined);
 			}
 		}
 
