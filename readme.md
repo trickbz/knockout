@@ -25,6 +25,10 @@
 	* etc (TODO: add more)
 8. Make sure we have full programmatic control over the current Slick Grid settings (save grid settings per user)
 
+## TOTO
+
+* Investigate if telerik js controls better and support jQuery UI themes
+
 ## Installation
 
 1. Download and install node from https://nodejs.org/
