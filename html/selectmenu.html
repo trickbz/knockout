@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<title>jQuery UI - Slider</title>
 
-	<link rel="stylesheet" href="../bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+	<link rel="stylesheet" href="../bower_components/jquery-ui/themes/dot-luv/jquery-ui.min.css">
 
 	<style>
 		.selectedButton {
@@ -41,7 +41,8 @@
 					<!-- ko foreach: countries -->
 					<button data-bind="text: id, css: { selectedButton: $root.selectedCountry() && ($root.selectedCountry().id() == id()) }, click: $root.pagingButtonClick"></button>
 					<!-- /ko -->
-					<button data-bind="click: $root.deselectCountry">Deselect</button>
+					<button data-bind="click: $root.deselectCountry,
+										enabled: !selectedCountry">Deselect</button>
 				</div>
 
 			</td>
@@ -64,22 +65,25 @@
 			<td>
 				<!-- options binding MUST come BEFORE selectmenu binding!! -->
 				<select data-bind="options: countries, 
-						selectmenu: selectedCountry1,
-						selectmenuOptions: { width: 300 }, 
-						optionsValue: 'id', 
+						optionsCaption: 'Choose..',
+						optionsValue: 'id',
 						optionsText: 'name',
-						optionsCaption: 'Choose..'" id="jqueryUiCombo">
+						selectmenu: selectedCountry1,
+						selectmenuOptions: { width: 300 } 
+						" id="jqueryUiCombo">
 				</select>
 			</td>
 			<td>
 				<div style="margin: 10px;">
 					<!-- ko foreach: countries -->
 					<button data-bind="text: id(), 
-										css: { selectedButton: $root.selectedCountry1 && ($root.selectedCountry1() == id())  },
-										click: $root.pagingButtonClick1">
+										css: { 'selectedButton': $root.selectedCountry1() == id()  },
+										click: $root.pagingButtonClick1,
+										jqButton: {}" ,>
 					</button>
 					<!-- /ko -->
-					<button data-bind="click: deselectCountry1">Deselect</button>
+					<button data-bind="click: deselectCountry1,
+										jqButton: { disabled: !selectedCountry1() }">Deselect</button>
 				</div>
 			</td>
 			<td data-bind="if: selectedCountry1">
@@ -87,7 +91,6 @@
 			</td>
 		</tr>
 	</table>
-
 
 	<script>
 		$(document).ready(function() {
@@ -113,6 +116,19 @@
 					if ($el.val() !== null) {
 						$el.selectmenu('refresh', true);
 					}
+				}
+			}
+	
+			ko.bindingHandlers.jqButton = {
+				init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+					var options = valueAccessor() || {};
+					var $el = $(element);
+					$el.button(options);
+				},
+				update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+        			var value = ko.utils.unwrapObservable(valueAccessor()),
+					disabled = ko.utils.unwrapObservable(value.disabled);
+					$(element).button("option", "disabled", disabled);
 				}
 			}
 	
@@ -147,16 +163,27 @@
 				self.selectedCountry1 = ko.observable(2);
 				self.pagingButtonClick1 = function(button) {
 					self.selectedCountry1(button.id());
+					
 				};
 				self.deselectCountry1 = function() {
 					self.selectedCountry1(undefined);
 				}
+				
+				self.isDeselectBtnEnabled = ko.computed(function() {
+					var result = self.selectedCountry1() == 1;
+					console.log("isDeselectBtnEnabled: " + result);
+					return self.selectedCountry1() == 1;
+				});
+				
+				self.justButtonEnabled = ko.observable(true);
 			}
 	
 			var viewModel = new ViewModel();
+			viewModel.selectedCountry1.subscribe(function(newValue) {
+				console.log("selectedCountry1: '" + newValue + "'");
+			});
 			ko.applyBindings(viewModel);
 		});
-
 	</script>
 
 </body>

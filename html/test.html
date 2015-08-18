@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>jQuery UI - Slider</title>
+
+	<link rel="stylesheet" href="../bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+
+	<script src='../bower_components/knockout/dist/knockout.js' type='text/javascript'></script>
+	<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
+	
+	<style>
+		.selectedButton {
+			background-color: lightcoral;
+			color: red;
+		}
+	</style>
+</head>
+
+<body>
+	<a href="../index.html">Back to the index.html page</a>
+
+	<div>
+		<!-- ko foreach: buttons -->
+		<button data-bind="text: $data,
+							click: $parent.selectButton,
+							css: { selectedButton: $data == $parent.selectedButton() }"></button>
+		<!-- /ko -->
+		<button data-bind="click: deselect,
+							enable: selectedButton">Deselect</button>
+	</div>
+	Selected button: <span data-bind="text: selectedButton"></span>
+		
+	<script>
+		function ViewModel() {
+			var self = this;
+			self.buttons = ko.observable([
+				1, 2, 3
+			]);
+			self.selectedButton = ko.observable(2);
+			self.selectButton = function(data, event) {
+				self.selectedButton(data);
+			};
+			self.deselect = function(data, event) {
+				self.selectedButton(undefined);	
+			};
+		};
+		viewModel = new ViewModel();
+		ko.applyBindings(viewModel);
+
+	</script>
+
+</body>
+
+</html>
