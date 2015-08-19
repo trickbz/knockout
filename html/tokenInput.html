@@ -57,73 +57,88 @@
 	<a href="../index.html">Back to the index.html page</a>
 
 	<div style="margin-top: 10px;">
-		<input data-bind="tokenInput: languages,
-							tokenInputOptions: { hintText: 'Choose a language', theme: 'facebook', searchDelay: 0, minChars: 0, animateDropdown: false, preventDuplicates: true }
-							" />
+		<input data-bind="tokenInput: availableLanguages,
+			tokenInputOptions: { 
+				url: '../json/languages.json', 
+				hintText: 'Choose a language', 
+				theme: 'facebook', 
+				minChars: 0, 
+				preventDuplicates: true, 
+				searchDelay: 300 
+			}
+		" />
 	</div>
 	
 	<table>
 		<tr>
-			<th>All languages</th>
+			<th>Available Languages</th>
 			<th>Operations</th>
-			<th>Selected languages</th>
+			<th>Selected Languages</th>
 		</tr>
 		<tr>
 			<td>
-				<div class="listbox" data-bind="foreach: languages">
+				<div class="listbox" data-bind="foreach: availableLanguages">
 					<div class="listbox-item" data-bind="text: name,
-						event: { mouseover: $root.highlightLanguage, mouseout: $root.unhighlightListboxItem },
-						css: { 'highlighted-listbox-item': $data == $root.highlightedLanguage(), 'selected-listbox-item': $data == $root.selectedLanguage() },
-						click: $root.selectLanguage"></div>
+						event: { mouseover: $root.highlightLanguage, mouseout: $root.unhighlightLanguage },
+						css: { 'highlighted-listbox-item': $data == $root.highlightedLanguage(), 'selected-listbox-item': $data == $root.selectedAvailableLanguage() },
+						click: $root.selectAvailableLanguage"></div>
 				</div>
 			</td>
 			<td>
-				<div><button data-bind="enable: selectedLanguage(),
-										click: addLanguage">&gt;&gt;&gt;</button></div>
-				<div><button>&lt;&lt;&lt;</button></div>
+				<div><button data-bind="enable: selectedAvailableLanguage(),
+										click: addLanguage">&gt;</button></div>
+				<div><button data-bind="enable: availableLanguages().length > 0,
+										click: addAllLanguages">&gt;&gt;</button></div>
+				<div><button data-bind="enable: selectedSelectedLanguage(),
+										click: removeLanguage">&lt;</button></div>
+				<div><button data-bind="enable: selectedLanguages().length > 0,
+										click: removeAllLanguages">&lt;&lt;</button></div>
 			</td>
 			<td>
 				<div class="listbox" data-bind="foreach: selectedLanguages">
 					<div class="listbox-item" data-bind="text: name,
-						event: { mouseover: $root.highlightLanguage, mouseout: $root.unhighlightListboxItem },
-						css: { 'highlighted-listbox-item': $data == $root.highlightedLanguage(), 'selected-listbox-item': $data == $root.selectedLanguage() },
-						click: $root.selectLanguage"></div>
+						event: { mouseover: $root.highlightLanguage, mouseout: $root.unhighlightLanguage },
+						css: { 'highlighted-listbox-item': $data == $root.highlightedLanguage(), 'selected-listbox-item': $data == $root.selectedSelectedLanguage() },
+						click: $root.selectSelectedLanguage"></div>
 				</div>
 			</td>
 		</tr>
 	</table>
 
-
 	<script>
 		function ViewModel() {
 			var self = this;
 			
-			var dataTokenInput = [
-				{ id: 1, name: "ActionScript" },
-				{ id: 2, name: "AppleScript" },
-				{ id: 3, name: "Asp" },
-				{ id: 4, name: "BASIC" },
-				{ id: 5, name: "C" },
-				{ id: 6, name: "C++" },
-				{ id: 7, name: "Clojure" },
-				{ id: 8, name: "COBOL" },
-				{ id: 9, name: "ColdFusion" },
-				{ id: 10, name: "Erlang" },
-				{ id: 11, name: "Fortran" },
-				{ id: 12, name: "Groovy" },
-				{ id: 13, name: "Haskell" },
-				{ id: 14, name: "Java" },
-				{ id: 15, name: "JavaScript" },
-				{ id: 16, name: "Lisp" },
-				{ id: 17, name: "Perl" },
-				{ id: 18, name: "PHP" },
-				{ id: 19, name: "Python" },
-				{ id: 20, name: "Ruby" },
-				{ id: 21, name: "Scala" },
-				{ id: 22, name: "Scheme" }
-			];
-			self.languages = ko.observableArray(dataTokenInput);
+			// var dataTokenInput = [
+			// 	{ id: 1, name: "ActionScript" },
+			// 	{ id: 2, name: "AppleScript" },
+			// 	{ id: 3, name: "Asp" },
+			// 	{ id: 4, name: "BASIC" },
+			// 	{ id: 5, name: "C" },
+			// 	{ id: 6, name: "C++" },
+			// 	{ id: 7, name: "Clojure" },
+			// 	{ id: 8, name: "COBOL" },
+			// 	{ id: 9, name: "ColdFusion" },
+			// 	{ id: 10, name: "Erlang" },
+			// 	{ id: 11, name: "Fortran" },
+			// 	{ id: 12, name: "Groovy" },
+			// 	{ id: 13, name: "Haskell" },
+			// 	{ id: 14, name: "Java" },
+			// 	{ id: 15, name: "JavaScript" },
+			// 	{ id: 16, name: "Lisp" },
+			// 	{ id: 17, name: "Perl" },
+			// 	{ id: 18, name: "PHP" },
+			// 	{ id: 19, name: "Python" },
+			// 	{ id: 20, name: "Ruby" },
+			// 	{ id: 21, name: "Scala" },
+			// 	{ id: 22, name: "Scheme" }
+			// ];
+			
+			// var fringe = 22;
+			self.availableLanguages = ko.observableArray();
 			self.selectedLanguages = ko.observableArray();
+			// self.availableLanguages = ko.observableArray(dataTokenInput.slice(0, fringe));
+			// self.selectedLanguages = ko.observableArray(dataTokenInput.slice(fringe + 1));
 			
 			self.highlightedLanguage = ko.observable();
 			self.highlightLanguage = function(item, event) {
@@ -133,20 +148,51 @@
 				self.highlightedLanguage(undefined);
 			}
 			
-			self.selectedLanguage = ko.observable();
-			self.selectLanguage = function(item, event) {
-				var value = item == self.selectedLanguage() ? undefined : item;
-				self.selectedLanguage(value);
+			self.selectedAvailableLanguage = ko.observable();
+			self.selectAvailableLanguage = function(item, event) {
+				var value = item == self.selectedAvailableLanguage() ? undefined : item;
+				self.selectedAvailableLanguage(value);
+				self.selectedSelectedLanguage(undefined);
 			}
-			selectedLanguage = ko.observable();
+			
+			self.selectedSelectedLanguage = ko.observable();
+			self.selectSelectedLanguage = function(item, event) {
+				var value = item == self.selectedSelectedLanguage() ? undefined : item;
+				self.selectedSelectedLanguage(value);
+				self.selectedAvailableLanguage(undefined);
+			}			
 			
 			self.addLanguage = function() {
-				var item = self.selectedLanguage();
-				self.languages.remove(item);
+				var item = self.selectedAvailableLanguage();
+				self.availableLanguages.remove(item);
 				self.selectedLanguages.push(item);
-				self.selectedLanguage(undefined)
+				self.selectedAvailableLanguage(undefined);
+				self.selectSelectedLanguage(item);
 			}
 			
+			self.addAllLanguages = function() {
+				var deletedAvailableLanguages = self.availableLanguages.removeAll();
+				self.selectedLanguages.push.apply( 
+					self.selectedLanguages, deletedAvailableLanguages
+				);
+				self.selectedAvailableLanguage(undefined);
+			}
+			
+			self.removeLanguage = function() {
+				var item = self.selectedSelectedLanguage();
+				self.selectedLanguages.remove(item);
+				self.availableLanguages.push(item);
+				self.selectedSelectedLanguage(undefined);
+				self.selectAvailableLanguage(item);	
+			}
+			
+			self.removeAllLanguages = function() {
+				var deletedSelectedLanguages = self.selectedLanguages.removeAll();
+				self.availableLanguages.push.apply( 
+					self.availableLanguages, deletedSelectedLanguages
+				);
+				self.selectedSelectedLanguage(undefined);
+			}
 		}
 		var viewModel = new ViewModel();
 		ko.applyBindings(viewModel);
