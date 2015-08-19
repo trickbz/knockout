@@ -16,3 +16,14 @@ ko.bindingHandlers.jsSpinner = {
 	}
 };
 
+ko.bindingHandlers.tokenInput = {
+	init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+		var $el = $(element);
+		var options = allBindings().tokenInputOptions || {};
+		var observable = valueAccessor();
+		$el.tokenInput(observable(), options);
+	},
+	update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+		
+	}
+};
