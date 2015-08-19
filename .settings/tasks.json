@@ -10,7 +10,7 @@
             "taskName": "default",
             "args": [],
             "isBuildCommand": true,
-            "showOutput": "silent"
+            "showOutput": "never"
         }
     ]
 }

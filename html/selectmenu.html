@@ -91,6 +91,11 @@
 			</td>
 		</tr>
 	</table>
+	
+	<div>
+		<input type="text" data-bind="value: selectedCountry1, 
+										valueUpdate: 'afterkeydown'" />
+	</div>
 
 	<script>
 		$(document).ready(function() {
@@ -131,7 +136,7 @@
 					$(element).button("option", "disabled", disabled);
 				}
 			}
-	
+			
 			var Country = function(id, name) {
 				this.id = ko.observable(id);
 				this.name = ko.observable(name);
