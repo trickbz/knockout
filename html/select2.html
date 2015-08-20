@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>jQuery UI - Slider</title>
+
+	<link rel="stylesheet" href="../bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+	
+	<style>
+		.listbox {
+			padding: 10px;
+		}
+		
+		.listbox .listbox-item {
+			border: 1px solid black;
+			margin: 2px;
+			padding: 2px 5px;
+			background-color: #FFAAAA;
+		}
+		
+		.listbox .highlighted-listbox-item {
+			border: 1px solid black;
+			margin: 2px;
+			padding: 2px 5px;
+			background-color: darkorange;
+		}
+		
+		.listbox .selected-listbox-item {
+			border: 1px solid black;
+			margin: 2px;
+			padding: 2px 5px;
+			background-color: burlywood;
+		}
+		
+		td {
+			border: 1px solid black;
+		}
+		
+		td button {
+			min-width: 75px;
+			margin: 5px;
+		}
+	</style>
+
+	<script src='../bower_components/knockout/dist/knockout.js' type='text/javascript'></script>
+	<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
+	<script src="../js/bindings.js"></script>
+	<script src="../bower_components/select2/dist/js/select2.min.js"></script>
+</head>
+
+<body>
+	<a href="../index.html">Back to the index.html page</a>
+
+	<div style="margin-top: 10px;">
+		<input type="hidden"
+			data-bind="select2: {
+				data: languages,
+				minimumInputLength: 2
+			}
+		">
+	</div>
+
+	<script>
+		function ViewModel() {
+			var self = this;
+			
+			var languagesArray = [
+				{ id: 1, text: "ActionScript" },
+				{ id: 2, text: "AppleScript" },
+				{ id: 3, text: "Asp" },
+				{ id: 4, text: "BASIC" },
+				{ id: 5, text: "C" },
+				{ id: 6, text: "C++" },
+				{ id: 7, text: "Clojure" },
+				{ id: 8, text: "COBOL" },
+				{ id: 9, text: "ColdFusion" },
+				{ id: 10, text: "Erlang" },
+				{ id: 11, text: "Fortran" },
+				{ id: 12, text: "Groovy" },
+				{ id: 13, text: "Haskell" },
+				{ id: 14, text: "Java" },
+				{ id: 15, text: "JavaScript" },
+				{ id: 16, text: "Lisp" },
+				{ id: 17, text: "Perl" },
+				{ id: 18, text: "PHP" },
+				{ id: 19, text: "Python" },
+				{ id: 20, text: "Ruby" },
+				{ id: 21, text: "Scala" },
+				{ id: 22, text: "Scheme" }
+			];
+			
+			self.languages = ko.observableArray(languagesArray);
+		}
+
+		var viewModel = new ViewModel();
+		ko.applyBindings(viewModel);
+	</script>
+
+</body>
+</html>

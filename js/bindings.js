@@ -59,3 +59,15 @@ ko.bindingHandlers.tokenInput = {
 		// }
 	}
 };
+
+ko.bindingHandlers.select2 = {
+	init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+		
+		var options = valueAccessor();
+		var $el = $(element);
+		$el.select2(options);
+		
+	},
+	update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+	}
+};
